@@ -7,7 +7,8 @@ html, body {
 }
 
 .container {
-
+  max-width: 900px;
+  height: 500px;
 }
 
 /* HEADER */
@@ -36,7 +37,7 @@ h1 {
 }
 
 .filter-input {
-  width: 150px;
+  width: 80%;
 }
 
 .btn-xs {
@@ -46,13 +47,8 @@ h1 {
 /* MAIN */
 
 main {
-  height: 400px;
+  height: 90%;
   /*background-color: purple;*/
-}
-
-nav {
-  /*min-width: 200px;*/
-  /*background-color: olivedrab;*/
 }
 
 h3 {
@@ -60,13 +56,10 @@ h3 {
   text-transform: uppercase;
 }
 
-ul {
-  /*padding: 20px;*/
-}
-
-li {
-  margin: 10px auto;
-}
+/*.list-group-item .active {
+  color: lightblue;
+  border-color: lightblue;
+}*/
 
 .map-heading {
   float: right;
@@ -75,19 +68,29 @@ li {
 }
 
 .map-div {
-  height: 100%;
-  min-height: 400px;
+  height: 90%;
+  /*min-height: 400px;*/
+  /*margin-bottom: 10px;*/
+  margin-bottom: 10%;
   position: absolute;
   right: 0;
   /*background-color: blue;*/
 }
 
+.space {
+  height: 20px;
+}
+
 /* FOOTER */
 
 .footer {
-  margin-top: 10px;
+  margin: 10px 0;
   font-size: 12px;
   text-align: center;
+}
+
+.muted {
+  color: #999999;
 }
 
 /* MOBILE */
