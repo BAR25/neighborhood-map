@@ -141,9 +141,9 @@ var styles = [
 ];
 
 var map;
-
-// Create empty marker array
-var markers = [];
+var bounds;
+var defaultIcon;
+var highlightedIcon;
 
 // Create a place array
 var places = [
@@ -157,7 +157,7 @@ var places = [
   {title: 'Tasty n Sons', location: {lat: 45.55028919999999, lng: -122.6663747}},
 ];
 
-// This function initializes the map
+// This function initializes the map as a callback function for Google Maps API script
 function initMap() {
   // Create a new map instance
   map = new google.maps.Map(document.getElementById('map'), {
@@ -167,77 +167,63 @@ function initMap() {
     mapTypeControl: false
   });
 
-  createMarkersArray();
-  showMarkers();
+  defaultIcon = makeMarkerIcon('a82848');
+  highlightedIcon = makeMarkerIcon('ed4b74');
+  // get initial boundaries of map
+  bounds = new google.maps.LatLngBounds();
 
 }
 
-initMap();
+var Place = function(i) {
+  console.log("Place " + i + " created");
+  this.title = ko.observable(places[i].title);
+  this.location = ko.observable(places[i].location);
+  this.marker = ko.observable(null);
+  this.showMe = ko.observable(true);
+};
 
 var ViewModel = function() {
   var self = this;
   console.log("ViewModel initiated");
 
   // Create an observableArray of places (for the list?)
-  this.placeList = markers;
+  this.placeList = ko.observableArray([]);
   this.input = ko.observable();
 
-  // clicked-on place (showing infowindow)
-  this.currentPlace = ko.observable(this.placeList()[0]);
-
-  this.filterPlaces = function() {
-    // need to fill in
+  // Fill placeList array with new Place objects
+  this.placeList.fillArray = function() {
+    console.log("fillArray called");
+    // var placeArray = self.placeList;
+    for (i = 0; i < places.length; i++) {
+      // create new instance of Place object & add to placeList array
+      this.push(new Place(i));
+      console.log("Place " + i + " added to array");
+      console.log("Place " + i + " title: " + this[i].title);
+      var position = this[i].location;
+      var title = this[i].title;
+      addMarker(i, this);
+      places[i].marker = this[i].marker;
+    }
   };
 
+  this.placeList.fillArray();
 
-// couldn't figure out how to use these here...
-  // this.markerArray = createMarkersArray();
-  // this.showMarkers = showMarkers();
+  // clicked-on place (showing infowindow)
+  // this.currentPlace = ko.observable(this.placeList()[0]);
+
+  this.filterPlaces = function() {
+    console.log("filterPlaces function called");
+    // need to fill in
+  };
 
   // Track click events on list items
 
 };
 
-// this allows the bindings to be applied
-ko.applyBindings(new ViewModel());
+var vm = new ViewModel();
 
-// style basic marker icon
-var defaultIcon = makeMarkerIcon('a82848');
+ko.applyBindings(vm);
 
-// create a 'highlighted' marker for mouseovers
-var highlightedIcon = makeMarkerIcon('ed4b74');
-
-// Use places array to create an array of markers
-function createMarkersArray() {
-  for (var i = 0; i < places.length; i++) {
-    console.log("Marker created: " + i);
-    // get positions from location array
-    var position = places[i].location;
-    var title = places[i].title;
-    // create one marker per location & put into markers array
-    var marker = new google.maps.Marker({
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      icon: defaultIcon,
-      id: i
-    });
-    // push the marker into array of markers
-    markers.push(marker);
-    // create an onclick event to open an infowindow at each marker
-    // marker.addListener('click', function() {
-    //   populateInfoWindow(this, largeInfowindow);  // `this` is the clicked marker
-    // });
-    // add mouseover and mouseout event listeners, to change color
-    // back and forth
-    marker.addListener('mouseover', function() {
-      this.setIcon(highlightedIcon);
-    });
-    marker.addListener('mouseout', function() {
-      this.setIcon(defaultIcon);
-    });
-  }
-}
 
 // Create a new marker with the passed in color
 function makeMarkerIcon(markerColor) {
@@ -251,22 +237,58 @@ function makeMarkerIcon(markerColor) {
   return markerImage;
 }
 
-// Loop through the markers array and display all
-function showMarkers() {
-  console.log("showMarkers called");
-  // create a new LatLngBounds instance, which captures the SW & NE corners of viewport
-  var bounds = new google.maps.LatLngBounds();
-  // extend the boundaries of the map for each marker & display the marker
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-    bounds.extend(markers[i].position);
-  }
+// Fill the placeList observableArray with Place objects
+// function fillArray(self) {
+//   console.log("fillArray called");
+//   // var placeArray = self.placeList;
+//   for (i = 0; i < places.length; i++) {
+//     // get current boundaries of map
+//     // var bounds = new google.maps.LatLngBounds();
+//     // create new instance of Place object & add to placeList array
+//     self.placeList.push(new Place(i));
+//     console.log("Place " + i + " added to array");
+//     console.log("Place " + i + " title: " + self.placeList[i].title);
+//     // var position = self.placeList[i].location;
+//     // var title = self.placeList[i].title;
+//     addMarker(i, self);
+//     places[i].marker = self.placeList[i].marker;
+//   }
+// }
+
+// Use places array to create an array of markers
+function addMarker(i, self) {
+  console.log("Marker created: " + i);
+  // create one marker per location & put into markers array
+  var marker = new google.maps.Marker({
+    position: position,
+    title: title,
+    animation: google.maps.Animation.DROP,
+    icon: defaultIcon,
+    id: i,
+    map: map
+  });
+  // extend boundaries of map to fit marker
+  bounds.extend(position);
+  // create an onclick event to open an infowindow at each marker
+  // marker.addListener('click', function() {
+  //   populateInfoWindow(this, largeInfowindow);  // `this` is the clicked marker
+  // });
+  // add mouseover and mouseout event listeners, to change color
+  // back and forth
+  marker.addListener('mouseover', function() {
+    this.setIcon(highlightedIcon);
+  });
+  marker.addListener('mouseout', function() {
+    this.setIcon(defaultIcon);
+  });
+
+  self.placeList[i].marker = marker;
   map.fitBounds(bounds);  // tell the map to fit itself to those bounds
 }
 
 // Loop through the passed in markers and hide all
 function hideMarkers(markers) {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);  // doesn't delete marker, just hides it
+  for (var i = 0; i < places.length; i++) {
+    places[i].marker.setMap(null);  // doesn't delete marker, just hides it
   }
 }
