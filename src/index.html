@@ -15,44 +15,55 @@
     <link href="css/style.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container">
-      <header class="col-sm-12">
-        <div class="filter col-sm-3">
-          <input id="filter-text" class="filter-input" type="text" placeholder="Ex: restaurant">
-          <button id="filter-btn" type="button" class="btn btn-default btn-xs" aria-label="Left Align">
-            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
-          </button>
-          <!-- <input id="filter-button" class="button" type="button" value="Filter"> -->
+    <div class="wrap">
+      <div class="container page">
+        <header class="col-sm-12">
+          <div class="filter col-sm-3">
+            <input id="filter-text" class="filter-input" type="text" placeholder="Ex: restaurant">
+            <button id="filter-btn" type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+              <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+            </button>
+            <!-- <input id="filter-button" class="button" type="button" value="Filter"> -->
+          </div>
+          <div class="map-heading col-xs-12 col-sm-9">
+            <h1>Williams Neighborhood, Portland, OR</h1>
+          </div>
+        </header>
+        <div class="col-xs-12">
+          <hr>
         </div>
-        <div class="map-heading col-xs-12 col-sm-9">
-          <h1>Williams Neighborhood, Portland, OR</h1>
+        <main class="col-sm-12">
+          <div class="list-group col-sm-3">
+            <h3>Local Hangouts</h3>
+            <!-- <div id="place-list" data-bind="foreach: placeList">
+              <a href="" class="list-group-item" data-bind="click: showPlace">
+                <li data-bind="text: title"></li>
+              </a>
+            </div> -->
+            <a href="#" class="list-group-item active">
+              New Seasons Market
+            </a>
+            <a href="#" class="list-group-item">Sidebar</a>
+            <a href="#" class="list-group-item">Ristretto Roasters</a>
+            <a href="#" class="list-group-item">The Box Social</a>
+            <a href="#" class="list-group-item">The People's Pig</a>
+            <a href="#" class="list-group-item">The Waypost</a>
+            <a href="#" class="list-group-item">Grizzly Tattoo</a>
+            <a href="#" class="list-group-item">Tasty n Sons</a>
+          </div>
+          <div id="map" class="map-div panel panel-default col-xs-12 col-sm-9"></div>
+        </main>
+        <div class="space col-sm-12">
+          <hr>
         </div>
-      </header>
-      <div class="col-xs-12">
-        <hr>
-      </div>
-      <main class="col-sm-12">
-        <div class="list-group col-sm-3">
-          <h3>Local Hangouts</h3>
-          <a href="#" class="list-group-item active">
-            Place 1
-          </a>
-          <a href="#" class="list-group-item">Place 2</a>
-          <a href="#" class="list-group-item">Place 3</a>
-          <a href="#" class="list-group-item">Place 4</a>
-          <a href="#" class="list-group-item">Place 5</a>
-        </div>
-        <div id="map" class="map-div panel panel-default col-xs-12 col-sm-9"></div>
-      </main>
-      <div class="space col-sm-12">
-        <hr>
-      </div>
-      <div class="footer navbar-fixed-bottom col-sm-12">
-        <div>
-          <p class="muted">Designed by Kezia Wineberg 2016</p>
+        <div class="footer col-sm-12">
+          <div class="credit">
+            <p class="muted">Designed by Kezia Wineberg 2016</p>
+          </div>
         </div>
       </div>
     </div>
+
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="js/knockout.js"></script>
