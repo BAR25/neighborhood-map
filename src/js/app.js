@@ -169,6 +169,7 @@ function initMap() {
 
   createMarkersArray();
   showMarkers();
+
 }
 
 initMap();
@@ -176,16 +177,22 @@ initMap();
 var ViewModel = function() {
   var self = this;
   console.log("ViewModel initiated");
+
   // Create an observableArray of places (for the list?)
-  // this.placeList = ko.observableArray([]);
+  this.placeList = markers;
+  this.input = ko.observable();
 
-  // Observable for input
+  // clicked-on place (showing infowindow)
+  this.currentPlace = ko.observable(this.placeList()[0]);
 
+  this.filterPlaces = function() {
+    // need to fill in
+  };
+
+
+// couldn't figure out how to use these here...
   // this.markerArray = createMarkersArray();
   // this.showMarkers = showMarkers();
-
-
-
 
   // Track click events on list items
 

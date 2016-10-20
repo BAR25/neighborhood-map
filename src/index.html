@@ -19,8 +19,8 @@
       <div class="container page">
         <header class="col-sm-12">
           <div class="filter col-sm-3">
-            <input id="filter-text" class="filter-input" type="text" placeholder="Ex: restaurant">
-            <button id="filter-btn" type="button" class="btn btn-default btn-xs" aria-label="Left Align">
+            <input id="filter-text" class="filter-input" data-bind="textInput: input" type="text" placeholder="Ex: restaurant">
+            <button id="filter-btn" class="btn btn-default btn-xs" data-bind="click: filterPlaces" type="button" aria-label="Left Align">
               <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
             </button>
             <!-- <input id="filter-button" class="button" type="button" value="Filter"> -->
