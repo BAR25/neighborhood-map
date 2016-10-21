@@ -187,26 +187,26 @@ var ViewModel = function() {
   console.log("ViewModel initiated");
 
   // Create an observableArray of places (for the list?)
-  this.placeList = ko.observableArray([]);
+  this.placeList = ko.observableArray();
   this.input = ko.observable();
 
   // Fill placeList array with new Place objects
-  this.placeList.fillArray = function() {
+  this.placeList().fillArray = function() {
     console.log("fillArray called");
     // var placeArray = self.placeList;
     for (i = 0; i < places.length; i++) {
       // create new instance of Place object & add to placeList array
       this.push(new Place(i));
       console.log("Place " + i + " added to array");
-      console.log("Place " + i + " title: " + this[i].title);
-      var position = this[i].location;
-      var title = this[i].title;
-      addMarker(i, this);
-      places[i].marker = this[i].marker;
+      console.log("Place " + i + " title: " + this[i].title());
+      var position = this[i].location();
+      var title = this[i].title();
+      // addMarker(i, this);
+      // places[i].marker = this[i].marker();
     }
   };
 
-  this.placeList.fillArray();
+  this.placeList().fillArray();
 
   // clicked-on place (showing infowindow)
   // this.currentPlace = ko.observable(this.placeList()[0]);
@@ -282,7 +282,7 @@ function addMarker(i, self) {
     this.setIcon(defaultIcon);
   });
 
-  self.placeList[i].marker = marker;
+  self.placeList()[i].marker = marker;
   map.fitBounds(bounds);  // tell the map to fit itself to those bounds
 }
 
