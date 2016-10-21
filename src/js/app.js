@@ -142,6 +142,7 @@ var styles = [
 
 var map;
 var bounds;
+// var marker;
 var defaultIcon;
 var highlightedIcon;
 
@@ -172,15 +173,17 @@ function initMap() {
   // get initial boundaries of map
   bounds = new google.maps.LatLngBounds();
 
+  addMarkers();
+
+
+
 }
 
 var Place = function(i) {
   console.log("Place " + i + " created");
   this.title = ko.observable(places[i].title);
   this.location = ko.observable(places[i].location);
-  var title = this.title;
-  var position = this.location;
-  this.marker = ko.observable(addMarker(i, title, position));
+  this.marker = ko.observable(places[i].marker);
   this.showMe = ko.observable(true);
 };
 
@@ -198,8 +201,6 @@ var ViewModel = function() {
     self.placeList.push(new Place(i));
     console.log("Place " + i + " added to array");
     console.log("Place " + i + " title: " + self.placeList()[i].title());
-    // addMarker(i);
-    // places[i].marker = this[i].marker();
   }
 
   // clicked-on place (showing infowindow)
@@ -232,34 +233,31 @@ function makeMarkerIcon(markerColor) {
 }
 
 // Use places array to create an array of markers
-function addMarker(i, title, position) {
-  console.log("Marker created for: " + i);
-  // create one marker per location & put into markers array
-  var marker = new google.maps.Marker({
-    position: position,
-    title: title,
-    animation: google.maps.Animation.DROP,
-    icon: defaultIcon,
-    id: i,
-    map: map
-  });
-  // extend boundaries of map to fit marker
-  bounds.extend(position);
-  // create an onclick event to open an infowindow at each marker
-  // marker.addListener('click', function() {
-  //   populateInfoWindow(this, largeInfowindow);  // `this` is the clicked marker
-  // });
-  // add mouseover and mouseout event listeners, to change color
-  // back and forth
-  marker.addListener('mouseover', function() {
-    this.setIcon(highlightedIcon);
-  });
-  marker.addListener('mouseout', function() {
-    this.setIcon(defaultIcon);
-  });
+function addMarkers() {
+  for (var i = 0; i < places.length; i++) {
+    var position = places[i].location;
+    var title = places[i].title;
+    var marker = new google.maps.Marker({
+      position: position,
+      title: title,
+      animation: google.maps.Animation.DROP,
+      icon: defaultIcon,
+      id: i,
+      map: map
+    });
 
-  self.placeList()[i].marker = marker;
-  map.fitBounds(bounds);  // tell the map to fit itself to those bounds
+    places[i].marker = marker;
+    // extend boundaries of map to fit marker
+    // bounds.extend(position);
+
+    marker.addListener('mouseover', function() {
+      this.setIcon(highlightedIcon);
+    });
+    marker.addListener('mouseout', function() {
+      this.setIcon(defaultIcon);
+    });
+  }
+  // map.fitBounds(bounds);  // tell the map to fit itself to those bounds
 }
 
 // Loop through the passed in markers and hide all
