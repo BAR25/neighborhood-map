@@ -142,9 +142,9 @@ var styles = [
 
 var map;
 var bounds;
-// var marker;
 var defaultIcon;
 var highlightedIcon;
+var basicInfowindow;
 
 // Create a place array
 var places = [
@@ -172,24 +172,21 @@ function initMap() {
   highlightedIcon = makeMarkerIcon('ed4b74');
   // get initial boundaries of map
   bounds = new google.maps.LatLngBounds();
+  basicInfowindow = new google.maps.InfoWindow();
 
   addMarkers();
-
-
 
 }
 
 var Place = function(i) {
-  console.log("Place " + i + " created");
   this.title = ko.observable(places[i].title);
   this.location = ko.observable(places[i].location);
-  this.marker = ko.observable(places[i].marker);
+  this.marker = places[i].marker;  // not allowed to be KO observable
   this.showMe = ko.observable(true);
 };
 
 var ViewModel = function() {
   var self = this;
-  console.log("ViewModel initiated");
 
   // Create an observableArray of places (for the list?)
   this.placeList = ko.observableArray();
@@ -199,8 +196,6 @@ var ViewModel = function() {
   for (var i = 0; i < places.length; i++) {
     // create new instance of Place object & add to placeList array
     self.placeList.push(new Place(i));
-    console.log("Place " + i + " added to array");
-    console.log("Place " + i + " title: " + self.placeList()[i].title());
   }
 
   // clicked-on place (showing infowindow)
@@ -250,6 +245,11 @@ function addMarkers() {
     // extend boundaries of map to fit marker
     // bounds.extend(position);
 
+    // create an onclick event to open an infowindow at each marker
+    marker.addListener('click', function() {
+      showInfoWindow(this, basicInfowindow);  // `this` is the clicked marker
+    });
+
     marker.addListener('mouseover', function() {
       this.setIcon(highlightedIcon);
     });
@@ -266,3 +266,50 @@ function hideMarkers(markers) {
     places[i].marker.setMap(null);  // doesn't delete marker, just hides it
   }
 }
+
+// NOTE: function below is only slightly altered from original code in Udacity's
+// Google Maps APIs course
+// Create & show infowindow for marker
+function showInfoWindow(marker, infowindow) {
+  // check to make sure this marker's infowindow is not already open
+  if (infowindow.marker != marker) {
+    // clear infowindow content (gives streetview time to load)
+    infowindow.setContent('');
+    infowindow.marker = marker;
+    // make sure marker property is cleared if infowindow is closed
+    infowindow.addListener('closeclick', function() {
+      infowindow.marker = null;
+    });
+    // get panoramic streetview image from nearest location
+    var streetViewService = new google.maps.StreetViewService();
+    var radius = 50;  // find image w/in 50m radius
+    var getStreetView = function(data, status) {
+      // assuming OK status: compute position, calculate heading, get panorama
+      if (status == google.maps.StreetViewStatus.OK) {
+        var nearStreetViewLocation = data.location.latLng;
+        var heading = google.maps.geometry.spherical.computeHeading(
+          nearStreetViewLocation, marker.position);
+        infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+        var panoramaOptions = {
+          position: nearStreetViewLocation,
+          pov: {
+            heading: heading,
+            pitch: 10  // looking slightly upward
+          }
+        };
+        var panorama = new google.maps.StreetViewPanorama(
+          document.getElementById('pano'), panoramaOptions);
+          console.log('panorama created');
+      } else {
+        infowindow.setContent('<div>' + marker.title + '</div>' +
+          '<div>No Street View Found</div>');
+      }
+    };
+    // use streetview service to get closest streetview image w/in radius
+    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+    // open infowindow on correct marker
+    infowindow.open(map, marker);
+  }
+}
+
+

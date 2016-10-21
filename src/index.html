@@ -36,7 +36,7 @@
           <div>
             <h3>Local Hangouts</h3>
             <div id="place-list" class="list-group col-sm-3" data-bind="foreach: placeList">
-              <a href="" class="list-group-item" data-bind="visible: showMe">
+              <a href="" class="list-group-item" data-bind="click: $parent.showInfoWindow, visible: showMe">
                 <li data-bind="text: title"></li>
               </a>
             </div>

@@ -95,6 +95,11 @@ li {
   /*background-color: blue;*/
 }
 
+#pano {
+  width: 200px;
+  height: 200px;
+}
+
 .space {
   height: 20px;
 }
