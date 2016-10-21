@@ -36,7 +36,7 @@
           <div>
             <h3>Local Hangouts</h3>
             <div id="place-list" class="list-group col-sm-3" data-bind="foreach: placeList">
-              <a href="" class="list-group-item" data-bind="click: $parent.showInfoWindow, visible: showMe">
+              <a href="" class="list-group-item" data-bind="click: makeInfoWindow, visible: showMe">
                 <li data-bind="text: title"></li>
               </a>
             </div>
@@ -48,6 +48,7 @@
         </div>
         <div class="footer col-sm-12">
           <div class="credit">
+            <p class="muted">This app uses the Flickr API but is not endorsed or certified by Flickr.</p>
             <p class="muted">Designed by Kezia Wineberg 2016</p>
           </div>
         </div>

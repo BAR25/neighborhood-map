@@ -144,6 +144,7 @@ var map;
 var bounds;
 var defaultIcon;
 var highlightedIcon;
+var clickedIcon;
 var basicInfowindow;
 
 // Create a place array
@@ -170,10 +171,12 @@ function initMap() {
 
   defaultIcon = makeMarkerIcon('a82848');
   highlightedIcon = makeMarkerIcon('ed4b74');
+  clickedIcon = makeMarkerIcon('f79336');
   // get initial boundaries of map
   bounds = new google.maps.LatLngBounds();
   basicInfowindow = new google.maps.InfoWindow();
 
+  // create markers for each place and add to places array
   addMarkers();
 
 }
@@ -188,7 +191,7 @@ var Place = function(i) {
 var ViewModel = function() {
   var self = this;
 
-  // Create an observableArray of places (for the list?)
+  // Create an observableArray of places
   this.placeList = ko.observableArray();
   this.input = ko.observable();
 
@@ -197,9 +200,6 @@ var ViewModel = function() {
     // create new instance of Place object & add to placeList array
     self.placeList.push(new Place(i));
   }
-
-  // clicked-on place (showing infowindow)
-  // this.currentPlace = ko.observable(this.placeList()[0]);
 
   this.filterPlaces = function() {
     console.log("filterPlaces function called");
@@ -242,19 +242,26 @@ function addMarkers() {
     });
 
     places[i].marker = marker;
+    places[i].marker.clicked = false;
     // extend boundaries of map to fit marker
     // bounds.extend(position);
 
     // create an onclick event to open an infowindow at each marker
     marker.addListener('click', function() {
-      showInfoWindow(this, basicInfowindow);  // `this` is the clicked marker
+      this.clicked = true;
+      this.setIcon(clickedIcon);  // `this` is the clicked marker
+      showInfoWindow(this, basicInfowindow);
     });
 
     marker.addListener('mouseover', function() {
-      this.setIcon(highlightedIcon);
+      if (!this.clicked) {  // only enable if marker is not clicked
+        this.setIcon(highlightedIcon);
+      }
     });
     marker.addListener('mouseout', function() {
-      this.setIcon(defaultIcon);
+      if (!this.clicked) {
+        this.setIcon(defaultIcon);
+      }
     });
   }
   // map.fitBounds(bounds);  // tell the map to fit itself to those bounds
@@ -267,10 +274,9 @@ function hideMarkers(markers) {
   }
 }
 
-// NOTE: function below is only slightly altered from original code in Udacity's
-// Google Maps APIs course
 // Create & show infowindow for marker
-function showInfoWindow(marker, infowindow) {
+function showInfoWindow(marker) {
+  var infowindow = basicInfowindow;
   // check to make sure this marker's infowindow is not already open
   if (infowindow.marker != marker) {
     // clear infowindow content (gives streetview time to load)
@@ -278,38 +284,75 @@ function showInfoWindow(marker, infowindow) {
     infowindow.marker = marker;
     // make sure marker property is cleared if infowindow is closed
     infowindow.addListener('closeclick', function() {
+      marker.clicked = false;
+      marker.setIcon(defaultIcon);
       infowindow.marker = null;
     });
-    // get panoramic streetview image from nearest location
-    var streetViewService = new google.maps.StreetViewService();
-    var radius = 50;  // find image w/in 50m radius
-    var getStreetView = function(data, status) {
-      // assuming OK status: compute position, calculate heading, get panorama
-      if (status == google.maps.StreetViewStatus.OK) {
-        var nearStreetViewLocation = data.location.latLng;
-        var heading = google.maps.geometry.spherical.computeHeading(
-          nearStreetViewLocation, marker.position);
-        infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
-        var panoramaOptions = {
-          position: nearStreetViewLocation,
-          pov: {
-            heading: heading,
-            pitch: 10  // looking slightly upward
-          }
-        };
-        var panorama = new google.maps.StreetViewPanorama(
-          document.getElementById('pano'), panoramaOptions);
-          console.log('panorama created');
+
+    var getYelpReview = function(data, status) {
+      console.log("getYelpReview called");
+      // need to fill in
+      if (status == OK) {
+        // do stuff
+        infowindow.setContent('<div>' + marker.title + '</div><div id="yelp"></div>');
       } else {
         infowindow.setContent('<div>' + marker.title + '</div>' +
-          '<div>No Street View Found</div>');
+          '<div>No Yelp Reviews Found</div>');
       }
     };
-    // use streetview service to get closest streetview image w/in radius
-    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+
+    getYelpReview();
+
     // open infowindow on correct marker
     infowindow.open(map, marker);
   }
 }
 
+function makeInfoWindow(thing) {
+  console.log("makeInfoWindow called");
+  getPlaceDetails(thing, basicInfowindow);
+}
+
+function getPlaceDetails (marker, infowindow) {
+  var service = new google.maps.places.PlacesService(map);
+  service.getDetails({
+    placeId: marker.id
+  }, function(place, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      // set the marker property on this infowindow so it isn't created again
+      infowindow.marker = marker;
+      var innerHTML = '<div>';
+      if (place.name) {
+        innerHTML += '<strong>' + place.name + '</strong>';
+      }
+      if (place.formatted_address) {
+        innerHTML += '<br>' + place.formatted_address;
+      }
+      if (place.formatted_phone_number) {
+        innerHTML += '<br>' + place.formatted_phone_number;
+      }
+      if (place.opening_hours) {
+        innerHTML += '<br><br><strong>Hours:</strong><br>' +
+          place.opening_hours.weekday_text[0] + '<br>' +
+          place.opening_hours.weekday_text[1] + '<br>' +
+          place.opening_hours.weekday_text[2] + '<br>' +
+          place.opening_hours.weekday_text[3] + '<br>' +
+          place.opening_hours.weekday_text[4] + '<br>' +
+          place.opening_hours.weekday_text[5] + '<br>' +
+          place.opening_hours.weekday_text[6];
+      }
+      if (place.photos) {
+        innerHTML += '<br><br><img src="' + place.photos[0].getUrl(
+          {maxHeight: 100, maxWidth: 200}) + '">';
+      }
+      innerHTML += '</div>';
+      infowindow.setContent(innerHTML);
+      infowindow.open(map, marker);
+      // make sure the marker property is cleared if the infowindow is closed
+      infowindow.addListener('closeclick', function() {
+        infowindow.marker = null;
+      });
+    }
+  });
+}
 
