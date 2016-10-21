@@ -178,7 +178,9 @@ var Place = function(i) {
   console.log("Place " + i + " created");
   this.title = ko.observable(places[i].title);
   this.location = ko.observable(places[i].location);
-  this.marker = ko.observable(null);
+  var title = this.title;
+  var position = this.location;
+  this.marker = ko.observable(addMarker(i, title, position));
   this.showMe = ko.observable(true);
 };
 
@@ -191,22 +193,14 @@ var ViewModel = function() {
   this.input = ko.observable();
 
   // Fill placeList array with new Place objects
-  this.placeList().fillArray = function() {
-    console.log("fillArray called");
-    // var placeArray = self.placeList;
-    for (i = 0; i < places.length; i++) {
-      // create new instance of Place object & add to placeList array
-      this.push(new Place(i));
-      console.log("Place " + i + " added to array");
-      console.log("Place " + i + " title: " + this[i].title());
-      var position = this[i].location();
-      var title = this[i].title();
-      // addMarker(i, this);
-      // places[i].marker = this[i].marker();
-    }
-  };
-
-  this.placeList().fillArray();
+  for (var i = 0; i < places.length; i++) {
+    // create new instance of Place object & add to placeList array
+    self.placeList.push(new Place(i));
+    console.log("Place " + i + " added to array");
+    console.log("Place " + i + " title: " + self.placeList()[i].title());
+    // addMarker(i);
+    // places[i].marker = this[i].marker();
+  }
 
   // clicked-on place (showing infowindow)
   // this.currentPlace = ko.observable(this.placeList()[0]);
@@ -237,27 +231,9 @@ function makeMarkerIcon(markerColor) {
   return markerImage;
 }
 
-// Fill the placeList observableArray with Place objects
-// function fillArray(self) {
-//   console.log("fillArray called");
-//   // var placeArray = self.placeList;
-//   for (i = 0; i < places.length; i++) {
-//     // get current boundaries of map
-//     // var bounds = new google.maps.LatLngBounds();
-//     // create new instance of Place object & add to placeList array
-//     self.placeList.push(new Place(i));
-//     console.log("Place " + i + " added to array");
-//     console.log("Place " + i + " title: " + self.placeList[i].title);
-//     // var position = self.placeList[i].location;
-//     // var title = self.placeList[i].title;
-//     addMarker(i, self);
-//     places[i].marker = self.placeList[i].marker;
-//   }
-// }
-
 // Use places array to create an array of markers
-function addMarker(i, self) {
-  console.log("Marker created: " + i);
+function addMarker(i, title, position) {
+  console.log("Marker created for: " + i);
   // create one marker per location & put into markers array
   var marker = new google.maps.Marker({
     position: position,
