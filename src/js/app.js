@@ -189,17 +189,74 @@ var Place = function(i) {
 };
 
 var ViewModel = function() {
+  "use strict";
   var self = this;
 
   // Create an observableArray of places
   this.placeList = ko.observableArray();
   this.input = ko.observable();
+  this.yelp = ko.observable();
 
   // Fill placeList array with new Place objects
   for (var i = 0; i < places.length; i++) {
     // create new instance of Place object & add to placeList array
     self.placeList.push(new Place(i));
   }
+
+  this.selected_place = ko.observable();  // need to fill in
+
+  // this.yelp.base_url = 'https://api.yelp.com/v3/';
+
+  /** NOTE: the following OAuth code is largely based on @MarkN's implementation */
+  
+  // Generate randowm number & return as string for OAuth
+  function nonce_generate() {
+    return (Math.floor(Math.random() * 1e12).toString());
+  }
+
+  this.yelp.getData = function() {
+    var YELP_BASE_URL = 'https://api.yelp.com/v2/';
+    var CONSUMER_KEY = '4JVdSu5Pu8JrqsjFucDq2w';
+    var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko';
+    var CONSUMER_SECRET = '27txGjT7RBW5WbPgpqJhl8GFH9U';
+    var TOKEN_SECRET = '6LJy8jxTTbA1eXMvbJMZju3DfvI';
+
+    // var yelp_location = 'New+York+NY';
+    // var yelp_url = YELP_BASE_URL + 'business/' + yelp_location;
+    var yelp_url = YELP_BASE_URL + 'business/' + 'the-waypost-portland';
+    var parameters = {
+    	oauth_consumer_key: CONSUMER_KEY,
+    	oauth_token: CONSUMER_TOKEN,
+    	oauth_nonce: nonce_generate(),
+    	oauth_timestamp: Math.floor(Date.now()/1000),
+    	oauth_signature_method: 'HMAC-SHA1',
+    	oauth_version: '1.0',
+    	callback: 'cb'
+    };
+
+    var encodedSignature = oauthSignature.generate('GET', yelp_url, parameters, CONSUMER_SECRET, TOKEN_SECRET);
+    parameters.oauth_signature = encodedSignature;
+
+    var settings = {
+    	url: yelp_url,
+    	data: parameters,
+    	cache: true,
+    	dataType: 'jsonp',
+    	success: function(results) {
+    		console.log("Results: " + results);
+    	},
+    	fail: function() {
+    		console.log('Error?');
+    	}
+    };
+
+    $.ajax(settings);
+
+  };
+
+  this.yelp.getData();
+
+
 
   this.filterPlaces = function() {
     console.log("filterPlaces function called");
@@ -241,8 +298,6 @@ function addMarkers() {
       map: map
     });
 
-    places[i].marker = marker;
-    places[i].marker.clicked = false;
     // extend boundaries of map to fit marker
     // bounds.extend(position);
 
@@ -263,6 +318,9 @@ function addMarkers() {
         this.setIcon(defaultIcon);
       }
     });
+
+    places[i].marker = marker;
+    places[i].marker.clicked = false;
   }
   // map.fitBounds(bounds);  // tell the map to fit itself to those bounds
 }
@@ -273,6 +331,8 @@ function hideMarkers(markers) {
     places[i].marker.setMap(null);  // doesn't delete marker, just hides it
   }
 }
+
+
 
 // Create & show infowindow for marker
 function showInfoWindow(marker) {
@@ -289,8 +349,8 @@ function showInfoWindow(marker) {
       infowindow.marker = null;
     });
 
-    var getYelpReview = function(data, status) {
-      console.log("getYelpReview called");
+    var getYelpReviews = function(data, status) {
+      console.log("getYelpReviews called");
       // need to fill in
       if (status == OK) {
         // do stuff
@@ -301,7 +361,7 @@ function showInfoWindow(marker) {
       }
     };
 
-    getYelpReview();
+    getYelpReviews();
 
     // open infowindow on correct marker
     infowindow.open(map, marker);
@@ -313,6 +373,7 @@ function makeInfoWindow(thing) {
   getPlaceDetails(thing, basicInfowindow);
 }
 
+// TODO: make this info functional & show up in a DIV element
 function getPlaceDetails (marker, infowindow) {
   var service = new google.maps.places.PlacesService(map);
   service.getDetails({

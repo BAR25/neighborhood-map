@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Williams Neighborhood Map</title>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -48,16 +48,17 @@
         </div>
         <div class="footer col-sm-12">
           <div class="credit">
-            <p class="muted">This app uses the Flickr API but is not endorsed or certified by Flickr.</p>
+            <p class="muted">This app uses the Yelp API but is not endorsed or certified by Yelp.</p>
             <p class="muted">Designed by Kezia Wineberg 2016</p>
           </div>
         </div>
       </div>
     </div>
 
-    <script src="js/jquery-3.1.1.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="js/knockout.js"></script>
+    <script src="js/lib/jquery-3.1.1.min.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
+    <script src="js/lib/knockout.js"></script>
+    <script src="../bower_components/oauth-signature/dist/oauth-signature.js"></script>
     <script async src="js/app.js"></script>
     <script async defer
       src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyBERXmyQXCeoHPbcUlz1zyjU1bAplAVR-E&v=3&callback=initMap">
