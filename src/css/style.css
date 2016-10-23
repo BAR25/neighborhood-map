@@ -74,11 +74,6 @@ li {
   display: block;
 }
 
-/*.list-group-item .active {
-  color: lightblue;
-  border-color: lightblue;
-}*/
-
 .map-heading {
   float: right;
   margin-top: 30px;
@@ -95,9 +90,22 @@ li {
   /*background-color: blue;*/
 }
 
-#yelp {
-  width: 200px;
+.yelp {
+  width: 180px;
   height: 300px;
+}
+
+.rating-img {
+  width: 50%;
+}
+
+.yelp-img {
+  width: 95%;
+  margin: 5px auto;
+}
+
+.review {
+  margin: 3px auto;
 }
 
 .space {

@@ -1,4 +1,5 @@
-// Create a styles array for map
+/** STYLES ARRAY FOR MAP */
+
 var styles = [
   {
     "featureType": "administrative",
@@ -140,26 +141,26 @@ var styles = [
   }
 ];
 
-var map;
-var bounds;
-var defaultIcon;
-var highlightedIcon;
-var clickedIcon;
-var basicInfowindow;
+/** GLOBAL VARIABLES */
 
-// Create a place array
+var map, bounds, defaultIcon, highlightedIcon, clickedIcon, basicInfowindow;
+
+/** PLACES ARRAY */
+
 var places = [
-  {title: 'New Seasons Market', location: {lat: 45.5480584, lng: -122.6666864}},
-  {title: 'Sidebar', location: {lat: 45.5510076, lng: -122.667037}},
-  {title: 'Ristretto Roasters', location: {lat: 45.55028919999999, lng: -122.6663747}},
-  {title: 'The Box Social', location: {lat: 45.5480584, lng: -122.6666864}},
-  {title: 'The Peoples Pig', location: {lat: 45.546385, lng: -122.6668808}},
-  {title: 'The Waypost', location: {lat: 45.5457645, lng: -122.66648020000002}},
-  {title: 'Grizzly Tattoo', location: {lat: 45.551458, lng: -122.66696100000001}},
-  {title: 'Tasty n Sons', location: {lat: 45.55028919999999, lng: -122.6663747}},
+  {title: 'New Seasons Market', location: {lat: 45.5480584, lng: -122.6666864}, yelp_id: 'new-seasons-market-portland-12'},
+  {title: 'Sidebar', location: {lat: 45.5510076, lng: -122.667037}, yelp_id: 'lompoc-sidebar-portland-2'},
+  {title: 'Ristretto Roasters', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'ristretto-roasters-portland-3'},
+  {title: 'The Box Social', location: {lat: 45.5480584, lng: -122.6666864}, yelp_id: 'the-box-social-portland'},
+  {title: 'The Peoples Pig', location: {lat: 45.546385, lng: -122.6668808}, yelp_id: 'peoples-pig-portland'},
+  {title: 'The Waypost', location: {lat: 45.5457645, lng: -122.66648020000002}, yelp_id: 'the-waypost-portland'},
+  {title: 'Grizzly Tattoo', location: {lat: 45.551458, lng: -122.66696100000001}, yelp_id: 'grizzly-tattoo-portland'},
+  {title: 'Tasty n Sons', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'tasty-n-sons-portland'},
 ];
 
-// This function initializes the map as a callback function for Google Maps API script
+/** MAP */
+
+// Initialize map as callback function for Google Maps API script
 function initMap() {
   // Create a new map instance
   map = new google.maps.Map(document.getElementById('map'), {
@@ -169,6 +170,7 @@ function initMap() {
     mapTypeControl: false
   });
 
+  // Define global variables after map instance created (otherwise google is undefined)
   defaultIcon = makeMarkerIcon('a82848');
   highlightedIcon = makeMarkerIcon('ed4b74');
   clickedIcon = makeMarkerIcon('f79336');
@@ -181,12 +183,17 @@ function initMap() {
 
 }
 
+/** PLACE OBJECT */
+
 var Place = function(i) {
   this.title = ko.observable(places[i].title);
   this.location = ko.observable(places[i].location);
   this.marker = places[i].marker;  // not allowed to be KO observable
   this.showMe = ko.observable(true);
+  this.yelp_id = places[i].yelp_id;
 };
+
+/** VIEW MODEL */
 
 var ViewModel = function() {
   "use strict";
@@ -195,7 +202,7 @@ var ViewModel = function() {
   // Create an observableArray of places
   this.placeList = ko.observableArray();
   this.input = ko.observable();
-  this.yelp = ko.observable();
+  // this.yelp = ko.observable();
 
   // Fill placeList array with new Place objects
   for (var i = 0; i < places.length; i++) {
@@ -203,60 +210,7 @@ var ViewModel = function() {
     self.placeList.push(new Place(i));
   }
 
-  this.selected_place = ko.observable();  // need to fill in
-
-  // this.yelp.base_url = 'https://api.yelp.com/v3/';
-
-  /** NOTE: the following OAuth code is largely based on @MarkN's implementation */
-  
-  // Generate randowm number & return as string for OAuth
-  function nonce_generate() {
-    return (Math.floor(Math.random() * 1e12).toString());
-  }
-
-  this.yelp.getData = function() {
-    var YELP_BASE_URL = 'https://api.yelp.com/v2/';
-    var CONSUMER_KEY = '4JVdSu5Pu8JrqsjFucDq2w';
-    var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko';
-    var CONSUMER_SECRET = '27txGjT7RBW5WbPgpqJhl8GFH9U';
-    var TOKEN_SECRET = '6LJy8jxTTbA1eXMvbJMZju3DfvI';
-
-    // var yelp_location = 'New+York+NY';
-    // var yelp_url = YELP_BASE_URL + 'business/' + yelp_location;
-    var yelp_url = YELP_BASE_URL + 'business/' + 'the-waypost-portland';
-    var parameters = {
-    	oauth_consumer_key: CONSUMER_KEY,
-    	oauth_token: CONSUMER_TOKEN,
-    	oauth_nonce: nonce_generate(),
-    	oauth_timestamp: Math.floor(Date.now()/1000),
-    	oauth_signature_method: 'HMAC-SHA1',
-    	oauth_version: '1.0',
-    	callback: 'cb'
-    };
-
-    var encodedSignature = oauthSignature.generate('GET', yelp_url, parameters, CONSUMER_SECRET, TOKEN_SECRET);
-    parameters.oauth_signature = encodedSignature;
-
-    var settings = {
-    	url: yelp_url,
-    	data: parameters,
-    	cache: true,
-    	dataType: 'jsonp',
-    	success: function(results) {
-    		console.log("Results: " + results);
-    	},
-    	fail: function() {
-    		console.log('Error?');
-    	}
-    };
-
-    $.ajax(settings);
-
-  };
-
-  this.yelp.getData();
-
-
+  // this.selected_place = ko.observable();  // need to fill in
 
   this.filterPlaces = function() {
     console.log("filterPlaces function called");
@@ -271,6 +225,7 @@ var vm = new ViewModel();
 
 ko.applyBindings(vm);
 
+/** GLOBAL FUNCTIONS */
 
 // Create a new marker with the passed in color
 function makeMarkerIcon(markerColor) {
@@ -287,8 +242,11 @@ function makeMarkerIcon(markerColor) {
 // Use places array to create an array of markers
 function addMarkers() {
   for (var i = 0; i < places.length; i++) {
+    var infowindow = basicInfowindow;
     var position = places[i].location;
     var title = places[i].title;
+    var yelp = places[i].yelp_id;
+
     var marker = new google.maps.Marker({
       position: position,
       title: title,
@@ -298,6 +256,10 @@ function addMarkers() {
       map: map
     });
 
+    marker.i = i;
+    marker.yelp = yelp;
+    marker.infowindow = infowindow;
+
     // extend boundaries of map to fit marker
     // bounds.extend(position);
 
@@ -305,7 +267,7 @@ function addMarkers() {
     marker.addListener('click', function() {
       this.clicked = true;
       this.setIcon(clickedIcon);  // `this` is the clicked marker
-      showInfoWindow(this, basicInfowindow);
+      showInfoWindow(this, this.yelp, this.infowindow);
     });
 
     marker.addListener('mouseover', function() {
@@ -332,88 +294,110 @@ function hideMarkers(markers) {
   }
 }
 
-
-
 // Create & show infowindow for marker
-function showInfoWindow(marker) {
-  var infowindow = basicInfowindow;
+function showInfoWindow(marker, yelp_id, infowindow) {
   // check to make sure this marker's infowindow is not already open
-  if (infowindow.marker != marker) {
-    // clear infowindow content (gives streetview time to load)
+  if (infowindow.on) {
+    // clear infowindow content if open
     infowindow.setContent('');
-    infowindow.marker = marker;
+    console.log("Infowindow cleared");
+    infowindow.on = false;
     // make sure marker property is cleared if infowindow is closed
     infowindow.addListener('closeclick', function() {
       marker.clicked = false;
       marker.setIcon(defaultIcon);
-      infowindow.marker = null;
+      infowindow.on = false;
     });
-
-    var getYelpReviews = function(data, status) {
-      console.log("getYelpReviews called");
-      // need to fill in
-      if (status == OK) {
-        // do stuff
-        infowindow.setContent('<div>' + marker.title + '</div><div id="yelp"></div>');
-      } else {
-        infowindow.setContent('<div>' + marker.title + '</div>' +
-          '<div>No Yelp Reviews Found</div>');
-      }
-    };
-
-    getYelpReviews();
-
-    // open infowindow on correct marker
-    infowindow.open(map, marker);
   }
+
+  // Populate the marker's infowindow with data from Yelp
+  var showYelpReviews = function(marker, yelp_id, infowindow) {
+    getYelpData(marker, yelp_id, infowindow);
+  };
+
+  showYelpReviews(marker, yelp_id, infowindow);
 }
 
+// probably want to remove (unnecessary)
 function makeInfoWindow(thing) {
   console.log("makeInfoWindow called");
   getPlaceDetails(thing, basicInfowindow);
 }
 
-// TODO: make this info functional & show up in a DIV element
-function getPlaceDetails (marker, infowindow) {
-  var service = new google.maps.places.PlacesService(map);
-  service.getDetails({
-    placeId: marker.id
-  }, function(place, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      // set the marker property on this infowindow so it isn't created again
-      infowindow.marker = marker;
-      var innerHTML = '<div>';
-      if (place.name) {
-        innerHTML += '<strong>' + place.name + '</strong>';
+/** NOTE: the following OAuth code is largely based on @MarkN's implementation,
+with customized usage of result data */
+
+// Generate randowm number & return as string for OAuth
+function nonceGenerate() {
+  return (Math.floor(Math.random() * 1e12).toString());
+}
+
+// Get Yelp data through an AJAX request (with appropriate key, token, & secrets)
+function getYelpData(marker, yelp_id, infowindow) {
+  console.log("getYelpData called");
+
+  var YELP_BASE_URL = 'https://api.yelp.com/v2/';
+  var CONSUMER_KEY = '4JVdSu5Pu8JrqsjFucDq2w';
+  var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko';
+  var CONSUMER_SECRET = '27txGjT7RBW5WbPgpqJhl8GFH9U';
+  var TOKEN_SECRET = '6LJy8jxTTbA1eXMvbJMZju3DfvI';
+
+  var yelp_url = YELP_BASE_URL + 'business/' + yelp_id;
+  // var yelp_url = YELP_BASE_URL + 'business/' + 'the-waypost-portland';
+  var parameters = {
+    oauth_consumer_key: CONSUMER_KEY,
+    oauth_token: CONSUMER_TOKEN,
+    oauth_nonce: nonceGenerate(),
+    oauth_timestamp: Math.floor(Date.now()/1000),
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_version: '1.0',
+    callback: 'cb'
+  };
+
+  var encodedSignature = oauthSignature.generate('GET', yelp_url, parameters, CONSUMER_SECRET, TOKEN_SECRET);
+  parameters.oauth_signature = encodedSignature;
+
+  var settings = {
+    url: yelp_url,
+    data: parameters,
+    cache: true,
+    dataType: 'jsonp',
+    success: function(results) {
+      infowindow.on = true;
+      var innerHTML = '<div class="yelp">';
+      // check if each result exists before adding it to the div
+      if (results.name) {
+        innerHTML += '<h5>' + results.name + '</h5>';
       }
-      if (place.formatted_address) {
-        innerHTML += '<br>' + place.formatted_address;
+      if (results.location) {
+        innerHTML += '<p>' + results.location.address + '<br>' + results.location.city +
+        ', ' + results.location.state_code + '  ' + results.location.postal_code;
       }
-      if (place.formatted_phone_number) {
-        innerHTML += '<br>' + place.formatted_phone_number;
+      if (results.display_phone) {
+        innerHTML += '<br>' + results.display_phone + '</p>';
       }
-      if (place.opening_hours) {
-        innerHTML += '<br><br><strong>Hours:</strong><br>' +
-          place.opening_hours.weekday_text[0] + '<br>' +
-          place.opening_hours.weekday_text[1] + '<br>' +
-          place.opening_hours.weekday_text[2] + '<br>' +
-          place.opening_hours.weekday_text[3] + '<br>' +
-          place.opening_hours.weekday_text[4] + '<br>' +
-          place.opening_hours.weekday_text[5] + '<br>' +
-          place.opening_hours.weekday_text[6];
+      if (results.rating_img_url) {
+        innerHTML += '<img class="rating-img" src="' + results.rating_img_url + '">';
       }
-      if (place.photos) {
-        innerHTML += '<br><br><img src="' + place.photos[0].getUrl(
-          {maxHeight: 100, maxWidth: 200}) + '">';
+      if (results.image_url) {
+        innerHTML += '<img class="yelp-img" src="' + results.image_url + '">';
       }
-      innerHTML += '</div>';
+      if (results.reviews[0].excerpt) {
+        innerHTML += '<h5>Yelp reviewer ' + results.reviews[0].user.name +
+        ' says...</h5><p class="review">' + results.reviews[0].excerpt + '</p>';
+      }
+      innerHTML += '<a href="' + results.url + '">View on Yelp</a>' + '</div>';
       infowindow.setContent(innerHTML);
       infowindow.open(map, marker);
       // make sure the marker property is cleared if the infowindow is closed
       infowindow.addListener('closeclick', function() {
-        infowindow.marker = null;
+        infowindow.on = false;
       });
+    },
+    fail: function() {
+      console.log('Apparently we did not find anything...');
     }
-  });
-}
+  };
 
+  $.ajax(settings);
+}
