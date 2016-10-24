@@ -210,14 +210,16 @@ var ViewModel = function() {
     self.placeList.push(new Place(i));
   }
 
-  // this.selected_place = ko.observable();  // need to fill in
-
   this.filterPlaces = function() {
     console.log("filterPlaces function called");
     // need to fill in
   };
 
-  // Track click events on list items
+  // TODO: fix this function; place.marker shows up as undefined
+  this.makeListInfowindow = function(place) {
+    console.log("makeListInfowindow called");
+    showInfoWindow(place.marker, place.yelp_id, basicInfowindow);
+  };
 
 };
 
@@ -242,7 +244,7 @@ function makeMarkerIcon(markerColor) {
 // Use places array to create an array of markers
 function addMarkers() {
   for (var i = 0; i < places.length; i++) {
-    var infowindow = basicInfowindow;
+    // var infowindow = basicInfowindow;
     var position = places[i].location;
     var title = places[i].title;
     var yelp = places[i].yelp_id;
@@ -256,9 +258,7 @@ function addMarkers() {
       map: map
     });
 
-    marker.i = i;
     marker.yelp = yelp;
-    marker.infowindow = infowindow;
 
     // extend boundaries of map to fit marker
     // bounds.extend(position);
@@ -267,7 +267,7 @@ function addMarkers() {
     marker.addListener('click', function() {
       this.clicked = true;
       this.setIcon(clickedIcon);  // `this` is the clicked marker
-      showInfoWindow(this, this.yelp, this.infowindow);
+      showInfoWindow(this, this.yelp, basicInfowindow);
     });
 
     marker.addListener('mouseover', function() {
@@ -287,6 +287,7 @@ function addMarkers() {
   // map.fitBounds(bounds);  // tell the map to fit itself to those bounds
 }
 
+// TODO: utilize this function as part of filtering
 // Loop through the passed in markers and hide all
 function hideMarkers(markers) {
   for (var i = 0; i < places.length; i++) {
@@ -309,19 +310,8 @@ function showInfoWindow(marker, yelp_id, infowindow) {
       infowindow.on = false;
     });
   }
-
   // Populate the marker's infowindow with data from Yelp
-  var showYelpReviews = function(marker, yelp_id, infowindow) {
-    getYelpData(marker, yelp_id, infowindow);
-  };
-
-  showYelpReviews(marker, yelp_id, infowindow);
-}
-
-// probably want to remove (unnecessary)
-function makeInfoWindow(thing) {
-  console.log("makeInfoWindow called");
-  getPlaceDetails(thing, basicInfowindow);
+  getYelpData(marker, yelp_id, infowindow);
 }
 
 /** NOTE: the following OAuth code is largely based on @MarkN's implementation,

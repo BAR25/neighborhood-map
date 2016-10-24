@@ -1,5 +1,5 @@
 ## Neighborhood Map Project
-Capstone project for <a ref="https://www.udacity.com/">Udacity</a>'s <a ref="https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001?v=fe1">Front-End Web Developer Nanodegree</a> program
+Capstone project for <a href="https://www.udacity.com/">Udacity</a>'s <a href="https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001?v=fe1">Front-End Web Developer Nanodegree</a> program
 
 ###Williams Neighborhood Map
 In this project a map-based web app was built from scratch, integrating Google Maps APIs and the Yelp API v.2.
