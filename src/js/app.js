@@ -143,7 +143,7 @@ var styles = [
 
 /** GLOBAL VARIABLES */
 
-var map, bounds, defaultIcon, highlightedIcon, clickedIcon, basicInfowindow;
+var map, vm, bounds, defaultIcon, highlightedIcon, clickedIcon, basicInfowindow;
 
 /** PLACES ARRAY */
 
@@ -181,16 +181,20 @@ function initMap() {
   // create markers for each place and add to places array
   addMarkers();
 
+  vm = new ViewModel();
+  ko.applyBindings(vm);
+
 }
 
 /** PLACE OBJECT */
 
 var Place = function(i) {
-  this.title = ko.observable(places[i].title);
-  this.location = ko.observable(places[i].location);
+  this.title = places[i].title;
+  this.location = places[i].location;
   this.marker = places[i].marker;  // not allowed to be KO observable
   this.showMe = ko.observable(true);
   this.yelp_id = places[i].yelp_id;
+  this.infowindow = basicInfowindow;
 };
 
 /** VIEW MODEL */
@@ -215,17 +219,24 @@ var ViewModel = function() {
     // need to fill in
   };
 
-  // TODO: fix this function; place.marker shows up as undefined
+  // TODO: fix this; currently doesn't work
+  this.clearClickedMarkers = function() {
+    console.log("clearClickedMarkers called");
+    for (var i = 0; i < this.placeList.length; i++) {
+      this.placeList[i].marker.setIcon(defaultIcon);
+    }
+  };
+
   this.makeListInfowindow = function(place) {
     console.log("makeListInfowindow called");
-    showInfoWindow(place.marker, place.yelp_id, basicInfowindow);
+    // clearClickedMarkers();  // doesn't work
+    self.clearClickedMarkers();  // neither does this
+    showInfoWindow(place.marker, place.yelp_id, place.infowindow);
+    place.marker.clicked = true;
+    place.marker.setIcon(clickedIcon);
   };
 
 };
-
-var vm = new ViewModel();
-
-ko.applyBindings(vm);
 
 /** GLOBAL FUNCTIONS */
 
@@ -258,6 +269,8 @@ function addMarkers() {
       map: map
     });
 
+    marker.id = i;
+    marker.clicked = false;
     marker.yelp = yelp;
 
     // extend boundaries of map to fit marker
@@ -265,8 +278,8 @@ function addMarkers() {
 
     // create an onclick event to open an infowindow at each marker
     marker.addListener('click', function() {
-      this.clicked = true;
-      this.setIcon(clickedIcon);  // `this` is the clicked marker
+      this.clicked = true;  // `this` is the clicked marker
+      this.setIcon(clickedIcon);
       showInfoWindow(this, this.yelp, basicInfowindow);
     });
 
@@ -282,9 +295,19 @@ function addMarkers() {
     });
 
     places[i].marker = marker;
-    places[i].marker.clicked = false;
+    // places[i].marker.clicked = false;
   }
   // map.fitBounds(bounds);  // tell the map to fit itself to those bounds
+}
+
+// TODO: fix (doesn't work)
+// Reset all marker colors
+function clearClickedMarkers() {
+  console.log("clearClickedMarkers called");
+  var list = vm.PlaceList;
+  for (var i = 0; i < list.length; i++) {
+    list[i].marker.setIcon(defaultIcon);
+  }
 }
 
 // TODO: utilize this function as part of filtering
@@ -297,19 +320,14 @@ function hideMarkers(markers) {
 
 // Create & show infowindow for marker
 function showInfoWindow(marker, yelp_id, infowindow) {
-  // check to make sure this marker's infowindow is not already open
-  if (infowindow.on) {
-    // clear infowindow content if open
-    infowindow.setContent('');
-    console.log("Infowindow cleared");
+  infowindow.on = true;
+
+  infowindow.addListener('closeclick', function() {
+    marker.clicked = false;
+    marker.setIcon(defaultIcon);
     infowindow.on = false;
-    // make sure marker property is cleared if infowindow is closed
-    infowindow.addListener('closeclick', function() {
-      marker.clicked = false;
-      marker.setIcon(defaultIcon);
-      infowindow.on = false;
-    });
-  }
+  });
+
   // Populate the marker's infowindow with data from Yelp
   getYelpData(marker, yelp_id, infowindow);
 }
