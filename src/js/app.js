@@ -148,14 +148,22 @@ var map, vm, bounds, defaultIcon, highlightedIcon, clickedIcon, basicInfowindow;
 /** PLACES ARRAY */
 
 var places = [
-  {title: 'New Seasons Market', location: {lat: 45.5480584, lng: -122.6666864}, yelp_id: 'new-seasons-market-portland-12'},
-  {title: 'Sidebar', location: {lat: 45.5510076, lng: -122.667037}, yelp_id: 'lompoc-sidebar-portland-2'},
-  {title: 'Ristretto Roasters', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'ristretto-roasters-portland-3'},
-  {title: 'The Box Social', location: {lat: 45.5480584, lng: -122.6666864}, yelp_id: 'the-box-social-portland'},
-  {title: 'The Peoples Pig', location: {lat: 45.546385, lng: -122.6668808}, yelp_id: 'peoples-pig-portland'},
-  {title: 'The Waypost', location: {lat: 45.5457645, lng: -122.66648020000002}, yelp_id: 'the-waypost-portland'},
-  {title: 'Grizzly Tattoo', location: {lat: 45.551458, lng: -122.66696100000001}, yelp_id: 'grizzly-tattoo-portland'},
-  {title: 'Tasty n Sons', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'tasty-n-sons-portland'},
+  {title: 'New Seasons Market', location: {lat: 45.5480584, lng: -122.6666864}, yelp_id: 'new-seasons-market-portland-12',
+    keywords: ['Grocery store', 'Food', 'Drink']},
+  {title: 'Sidebar', location: {lat: 45.5510076, lng: -122.667037}, yelp_id: 'lompoc-sidebar-portland-2',
+    keywords: ['Bar', 'Food', 'Drink']},
+  {title: 'Ristretto Roasters', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'ristretto-roasters-portland-3',
+    keywords: ['Coffee & Tea']},
+  {title: 'The Box Social', location: {lat: 45.5480584, lng: -122.6666864}, yelp_id: 'the-box-social-portland',
+    keywords: ['Bar', 'Food', 'Drink']},
+  {title: 'The Peoples Pig', location: {lat: 45.546385, lng: -122.6668808}, yelp_id: 'peoples-pig-portland',
+    keywords: ['Restaurant', 'Food', 'Drink']},
+  {title: 'The Waypost', location: {lat: 45.5457645, lng: -122.66648020000002}, yelp_id: 'the-waypost-portland',
+    keywords: ['Bar', 'Food', 'Drink', 'Music']},
+  {title: 'Grizzly Tattoo', location: {lat: 45.551458, lng: -122.66696100000001}, yelp_id: 'grizzly-tattoo-portland',
+    keywords: ['Tattoo parlor']},
+  {title: 'Tasty n Sons', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'tasty-n-sons-portland',
+    keywords: ['Restaurant', 'Food', 'Drink']},
 ];
 
 /** MAP */
@@ -191,9 +199,11 @@ function initMap() {
 var Place = function(i) {
   this.title = places[i].title;
   this.location = places[i].location;
+  this.id = i;
   this.marker = places[i].marker;  // not allowed to be KO observable
   this.showMe = ko.observable(true);
   this.yelp_id = places[i].yelp_id;
+  this.keywords = places[i].keywords;
   this.infowindow = basicInfowindow;
 };
 
@@ -205,19 +215,20 @@ var ViewModel = function() {
 
   // Create an observableArray of places
   this.placeList = ko.observableArray();
-  this.input = ko.observable();
-  // this.yelp = ko.observable();
+  // Create an observableArray of business types (for dropdown)
+  this.businessList = ko.observableArray([
+    'Bar', 'Restaurant', 'Coffee & Tea', 'Grocery store', 'Tattoo parlor'
+  ]);
+  // Create an observableArray of keywords (for dropdown)
+  this.keywordList = ko.observableArray([
+    'Food', 'Drink', 'Music'
+  ]);
 
   // Fill placeList array with new Place objects
   for (var i = 0; i < places.length; i++) {
     // create new instance of Place object & add to placeList array
     self.placeList.push(new Place(i));
   }
-
-  this.filterPlaces = function() {
-    console.log("filterPlaces function called");
-    // need to fill in
-  };
 
   this.clearClickedMarkers = function() {
     for (var i = 0; i < this.placeList().length; i++) {
@@ -251,7 +262,6 @@ function makeMarkerIcon(markerColor) {
 // Use places array to create an array of markers
 function addMarkers() {
   for (var i = 0; i < places.length; i++) {
-    // var infowindow = basicInfowindow;
     var position = places[i].location;
     var title = places[i].title;
     var yelp = places[i].yelp_id;
@@ -268,9 +278,6 @@ function addMarkers() {
     marker.id = i;
     marker.clicked = false;
     marker.yelp = yelp;
-
-    // extend boundaries of map to fit marker
-    // bounds.extend(position);
 
     // create an onclick event to open an infowindow at each marker
     marker.addListener('click', function() {
@@ -291,16 +298,6 @@ function addMarkers() {
     });
 
     places[i].marker = marker;
-    // places[i].marker.clicked = false;
-  }
-  // map.fitBounds(bounds);  // tell the map to fit itself to those bounds
-}
-
-// TODO: utilize this function as part of filtering
-// Loop through the passed in markers and hide all
-function hideMarkers(markers) {
-  for (var i = 0; i < places.length; i++) {
-    places[i].marker.setMap(null);  // doesn't delete marker, just hides it
   }
 }
 
@@ -316,6 +313,22 @@ function showInfoWindow(marker, yelp_id, infowindow) {
 
   // Populate the marker's infowindow with data from Yelp
   getYelpData(marker, yelp_id, infowindow);
+}
+
+// Toggle visibility of list items & markers according to filter
+function filterPlaces(data) {
+  var list = vm.placeList();
+  // iterate through placeList and check if filter choice matches a keyword
+  for (var i = 0; i < list.length; i++) {
+    var found = (list[i].keywords.indexOf(data) > -1);
+    if (found) {
+      list[i].showMe(true);  // show list item
+      list[i].marker.setMap(map);  // show corresponding marker
+    } else {
+      list[i].showMe(false);  // hide list item
+      list[i].marker.setMap(null);  // hide marker
+    }
+  }
 }
 
 /** NOTE: the following OAuth code is largely based on @MarkN's implementation,

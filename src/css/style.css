@@ -29,16 +29,10 @@ html, body {
 
 header {
   height: 80px;
-  /*background-color: turquoise;*/
 }
 
-.filter {
-  margin-top: 30px;
-  /*background-color: firebrick;*/
-}
-
-input {
-  font-size: 12px;
+.dropdown {
+  margin-top: 40px;
 }
 
 h1 {
