@@ -219,18 +219,14 @@ var ViewModel = function() {
     // need to fill in
   };
 
-  // TODO: fix this; currently doesn't work
   this.clearClickedMarkers = function() {
-    console.log("clearClickedMarkers called");
-    for (var i = 0; i < this.placeList.length; i++) {
-      this.placeList[i].marker.setIcon(defaultIcon);
+    for (var i = 0; i < this.placeList().length; i++) {
+      this.placeList()[i].marker.setIcon(defaultIcon);
     }
   };
 
   this.makeListInfowindow = function(place) {
-    console.log("makeListInfowindow called");
-    // clearClickedMarkers();  // doesn't work
-    self.clearClickedMarkers();  // neither does this
+    self.clearClickedMarkers();
     showInfoWindow(place.marker, place.yelp_id, place.infowindow);
     place.marker.clicked = true;
     place.marker.setIcon(clickedIcon);
@@ -298,16 +294,6 @@ function addMarkers() {
     // places[i].marker.clicked = false;
   }
   // map.fitBounds(bounds);  // tell the map to fit itself to those bounds
-}
-
-// TODO: fix (doesn't work)
-// Reset all marker colors
-function clearClickedMarkers() {
-  console.log("clearClickedMarkers called");
-  var list = vm.PlaceList;
-  for (var i = 0; i < list.length; i++) {
-    list[i].marker.setIcon(defaultIcon);
-  }
 }
 
 // TODO: utilize this function as part of filtering
