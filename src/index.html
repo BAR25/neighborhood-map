@@ -18,13 +18,34 @@
     <div class="wrap">
       <div class="container page">
         <header class="col-sm-12">
-          <div class="filter col-sm-3">
+          <div class="dropdown filter col-sm-3">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              Dropdown
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+              <li class="dropdown-header">Type of business</li>
+              <li><a href="#">Restaurant</a></li>
+              <li><a href="#">Coffee &amp; Tea</a></li>
+              <li><a href="#">Bar</a></li>
+              <li><a href="#">Tattoo Parlor</a></li>
+              <li class="dropdown-header">Keyword</li>
+              <li><a href="#">Food</a></li>
+              <li><a href="#">Drink</a></li>
+              <li><a href="#">Music</a></li>
+              <li><a href="#">Tattoos</a></li>
+              <li role="separator" class="divider"></li>
+              <!-- Give user option to search more fully on Yelp (opens in new window) -->
+              <li><a href="https://www.yelp.com/portland" target="_blank">Search on Yelp</a></li>
+            </ul>
+          </div>
+          <!-- <div class="filter col-sm-3">
             <input id="filter-text" class="filter-input" data-bind="textInput: input" type="text" placeholder="Ex: restaurant">
             <button id="filter-btn" class="btn btn-default btn-xs" data-bind="click: filterPlaces" type="button" aria-label="Left Align">
               <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
-            </button>
+            </button> -->
             <!-- <input id="filter-button" class="button" type="button" value="Filter"> -->
-          </div>
+          <!-- </div> -->
           <div class="map-heading col-xs-12 col-sm-9">
             <h1>Williams Neighborhood, Portland, OR</h1>
           </div>
