@@ -6,16 +6,7 @@ html, body {
   padding: 0;
 }
 
-.wrap {
-  min-height: 100%;
-  height: auto;
-  /* Negative indent footer by its height */
-  margin: 0 auto -60px;
-  /* Pad bottom by footer height */
-  padding: 0 0 60px;
-}
-
-.page {
+.container {
   max-width: 900px;
   height: 500px;
 }
@@ -69,12 +60,8 @@ li {
 }
 
 .map-div {
-  height: 90%;
-  /*min-height: 400px;*/
-  /*margin-bottom: 10px;*/
-  margin-bottom: 10%;
-  position: absolute;
-  right: 0;
+  height: 430px;
+  width: 100%;
 }
 
 .yelp {
@@ -98,7 +85,6 @@ li {
 /* FOOTER */
 
 .footer {
-  height: 60px;
   font-size: 12px;
   text-align: center;
 }
@@ -108,7 +94,6 @@ li {
 }
 
 .muted {
-  margin-top: 10px;
   color: #999999;
 }
 
@@ -116,6 +101,6 @@ li {
 
 /* TODO: need to fix footer on smaller width viewports */
 @media only screen and (max-width: 767px) {
-  .map-div { max-height: 400px; }
-  .footer { margin-top: 20px; }
+  /*.map-div { max-height: 400px; }*/
+  /*.footer { margin-top: 20px; }*/
 }

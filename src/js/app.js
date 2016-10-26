@@ -150,7 +150,7 @@ var map, vm, bounds, defaultIcon, highlightedIcon, clickedIcon, basicInfowindow;
 var places = [
   {title: 'New Seasons Market', location: {lat: 45.5480584, lng: -122.6666864}, yelp_id: 'new-seasons-market-portland-12',
     keywords: ['Grocery store', 'Food', 'Drink']},
-  {title: 'Sidebar', location: {lat: 45.5510076, lng: -122.667037}, yelp_id: 'lompoc-sidebar-portland-2',
+  {title: 'Lompoc Sidebar', location: {lat: 45.5510076, lng: -122.667037}, yelp_id: 'lompoc-sidebar-portland-2',
     keywords: ['Bar', 'Food', 'Drink']},
   {title: 'Ristretto Roasters', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'ristretto-roasters-portland-3',
     keywords: ['Coffee & Tea']},
@@ -275,6 +275,8 @@ function addMarkers() {
       map: map
     });
 
+    bounds.extend(marker.position);
+
     marker.id = i;
     marker.clicked = false;
     marker.yelp = yelp;
@@ -299,6 +301,7 @@ function addMarkers() {
 
     places[i].marker = marker;
   }
+  map.fitBounds(bounds);
 }
 
 // Create & show infowindow for marker
@@ -323,11 +326,20 @@ function filterPlaces(data) {
     var found = (list[i].keywords.indexOf(data) > -1);
     if (found) {
       list[i].showMe(true);  // show list item
-      list[i].marker.setMap(map);  // show corresponding marker
+      list[i].marker.setVisible(true);  // show corresponding marker
     } else {
       list[i].showMe(false);  // hide list item
-      list[i].marker.setMap(null);  // hide marker
+      list[i].marker.setVisible(false);  // hide marker
     }
+  }
+}
+
+function showFullList() {
+  var list = vm.placeList();
+  // iterate through placeList and check if filter choice matches a keyword
+  for (var i = 0; i < list.length; i++) {
+      list[i].showMe(true);  // show list item
+      list[i].marker.setVisible(true);  // show corresponding marker
   }
 }
 
@@ -346,6 +358,7 @@ function getYelpData(marker, yelp_id, infowindow) {
   var YELP_BASE_URL = 'https://api.yelp.com/v2/';
   var CONSUMER_KEY = '4JVdSu5Pu8JrqsjFucDq2w';
   var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko';
+  // var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko###';
   var CONSUMER_SECRET = '27txGjT7RBW5WbPgpqJhl8GFH9U';
   var TOKEN_SECRET = '6LJy8jxTTbA1eXMvbJMZju3DfvI';
 
@@ -401,9 +414,10 @@ function getYelpData(marker, yelp_id, infowindow) {
         infowindow.on = false;
       });
     },
-    fail: function(results) {
-      console.log('Yelp error: ' + results.error.text);
-      alert("Yelp API v2 returned the following error: " + results.error.text);
+    // TODO: need to fix this to return more specific error message
+    error: function(error) {
+      console.log('Yelp error: ' + error.id);
+      // alert("Yelp API v2 returned the following error: " + error.id);
     }
   };
 
