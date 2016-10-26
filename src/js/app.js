@@ -401,8 +401,9 @@ function getYelpData(marker, yelp_id, infowindow) {
         infowindow.on = false;
       });
     },
-    fail: function() {
-      console.log('Apparently we did not find anything...');
+    fail: function(results) {
+      console.log('Yelp error: ' + results.error.text);
+      alert("Yelp API v2 returned the following error: " + results.error.text);
     }
   };
 
