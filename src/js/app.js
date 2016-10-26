@@ -306,12 +306,9 @@ function addMarkers() {
 
 // Create & show infowindow for marker
 function showInfoWindow(marker, yelp_id, infowindow) {
-  infowindow.on = true;
-
   infowindow.addListener('closeclick', function() {
     marker.clicked = false;
     marker.setIcon(defaultIcon);
-    infowindow.on = false;
   });
 
   // Populate the marker's infowindow with data from Yelp
@@ -353,8 +350,6 @@ function nonceGenerate() {
 
 // Get Yelp data through an AJAX request (with appropriate key, token, & secrets)
 function getYelpData(marker, yelp_id, infowindow) {
-  console.log("getYelpData called");
-
   var YELP_BASE_URL = 'https://api.yelp.com/v2/';
   var CONSUMER_KEY = '4JVdSu5Pu8JrqsjFucDq2w';
   var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko';
@@ -363,7 +358,6 @@ function getYelpData(marker, yelp_id, infowindow) {
   var TOKEN_SECRET = '6LJy8jxTTbA1eXMvbJMZju3DfvI';
 
   var yelp_url = YELP_BASE_URL + 'business/' + yelp_id;
-  // var yelp_url = YELP_BASE_URL + 'business/' + 'the-waypost-portland';
   var parameters = {
     oauth_consumer_key: CONSUMER_KEY,
     oauth_token: CONSUMER_TOKEN,
@@ -383,7 +377,6 @@ function getYelpData(marker, yelp_id, infowindow) {
     cache: true,
     dataType: 'jsonp',
     success: function(results) {
-      infowindow.on = true;
       var innerHTML = '<div class="yelp">';
       // check if each result exists before adding it to the div
       if (results.name) {
@@ -409,17 +402,17 @@ function getYelpData(marker, yelp_id, infowindow) {
       innerHTML += '<a href="' + results.url + '">View on Yelp</a>' + '</div>';
       infowindow.setContent(innerHTML);
       infowindow.open(map, marker);
-      // make sure the marker property is cleared if the infowindow is closed
-      infowindow.addListener('closeclick', function() {
-        infowindow.on = false;
-      });
     },
     // TODO: need to fix this to return more specific error message
-    error: function(error) {
-      console.log('Yelp error: ' + error.id);
-      // alert("Yelp API v2 returned the following error: " + error.id);
-    }
+    // error: function(error) {
+    //   console.log('Yelp error: ' + error.id);
+    //   // alert("Yelp API v2 returned the following error: " + error.id);
+    // }
   };
 
-  $.ajax(settings);
+  // $.ajax(settings);
+  $.ajax(settings).catch(function (err) {
+    // console.error(err);
+    alert("Yelp API v2 returned the following error: " + err);
+  });
 }
