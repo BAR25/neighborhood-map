@@ -16,10 +16,10 @@ Click on a marker or list item to find out more information about a local busine
 * <a href="https://developers.google.com/maps/">Google Maps APIs</a>
 * <a href="https://www.yelp.com/developers/documentation/v2/overview">Yelp API v2</a>
 * <a href="https://snazzymaps.com/">Snazzy Maps</a> — "<a href="https://snazzymaps.com/style/14889/flat-pale">Flat Pale</a>" by Hidenori Ikeda
-* <a href="https://github.com/bettiolo/oauth-signature-js">oauth-signature-js</a> — <a href="https://github.com/bettiolo">Bettiolo</a>)
+* <a href="https://github.com/bettiolo/oauth-signature-js">oauth-signature-js</a> — <a href="https://github.com/bettiolo">Marco Bettiolo</a>
 * OAuth code based off of Mark Nguyen's <a href="https://discussions.udacity.com/t/how-to-make-ajax-request-to-yelp-api/13699/5">implementation</a>
 * Google error handling based off of Udacity forum mentor Stacy's <a href="https://discussions.udacity.com/t/handling-google-maps-in-async-and-fallback/34282">code</a>
-* <a href="https://github.com/jaubourg/jquery-jsonp">jQuery-JSONP plugin</a>
+* <a href="https://github.com/jaubourg/jquery-jsonp">jQuery-JSONP plugin</a> — <a href="https://github.com/jaubourg">Julian Aubourg</a>
 
 ###Author
 Kezia Wineberg
