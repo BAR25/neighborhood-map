@@ -45,13 +45,13 @@ var ViewModel = function() {
   var self = this;
 
   // Create an observableArray of places
-  this.placeList = ko.observableArray();
+  self.placeList = ko.observableArray();
   // Create an observableArray of business types (for dropdown)
-  this.businessList = ko.observableArray([
+  self.businessList = ko.observableArray([
     'Bar', 'Restaurant', 'Coffee & Tea', 'Grocery store', 'Tattoo parlor'
   ]);
   // Create an observableArray of keywords (for dropdown)
-  this.keywordList = ko.observableArray([
+  self.keywordList = ko.observableArray([
     'Food', 'Drink', 'Music'
   ]);
 
@@ -61,13 +61,14 @@ var ViewModel = function() {
     self.placeList.push(new Place(i));
   }
 
-  this.clearClickedMarkers = function() {
-    for (var i = 0; i < this.placeList().length; i++) {
-      this.placeList()[i].marker.setIcon(defaultIcon);
+  self.clearClickedMarkers = function() {
+    var len = self.placeList().length;
+    for (var i = 0; i < len; i++) {
+      self.placeList()[i].marker.setIcon(defaultIcon);
     }
   };
 
-  this.makeListInfowindow = function(place) {
+  self.makeListInfowindow = function(place) {
     self.clearClickedMarkers();
     showInfoWindow(place.marker, place.yelp_id, place.infowindow);
     place.marker.clicked = true;

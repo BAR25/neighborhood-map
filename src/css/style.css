@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   display: block;
   font-family: Arial, sans-serif;
   height: 100%;
@@ -94,13 +95,5 @@ li {
 }
 
 .muted {
-  color: #999999;
-}
-
-/* MOBILE */
-
-/* TODO: need to fix footer on smaller width viewports */
-@media only screen and (max-width: 767px) {
-  /*.map-div { max-height: 400px; }*/
-  /*.footer { margin-top: 20px; }*/
+  color: #999;
 }
