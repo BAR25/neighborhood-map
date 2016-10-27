@@ -23,7 +23,6 @@ function initMap() {
 
   vm = new ViewModel();
   ko.applyBindings(vm);
-
 }
 
 /** PLACE OBJECT */
@@ -76,4 +75,3 @@ var ViewModel = function() {
   };
 
 };
-

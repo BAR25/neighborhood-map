@@ -141,10 +141,6 @@ var styles = [
   }
 ];
 
-/** GLOBAL VARIABLES */
-
-var map, vm, bounds, defaultIcon, highlightedIcon, clickedIcon, basicInfowindow;
-
 /** PLACES ARRAY */
 
 var places = [
@@ -165,6 +161,10 @@ var places = [
   {title: 'Tasty n Sons', location: {lat: 45.55028919999999, lng: -122.6663747}, yelp_id: 'tasty-n-sons-portland',
     keywords: ['Restaurant', 'Food', 'Drink']},
 ];
+
+/** GLOBAL VARIABLES */
+
+var map, vm, bounds, defaultIcon, highlightedIcon, clickedIcon, basicInfowindow;
 
 /** GLOBAL FUNCTIONS */
 
@@ -262,33 +262,45 @@ function showFullList() {
   }
 }
 
-// Show an error message if Google has not loaded
-function googleError() {
-  var text = 'Many apologies... it appears Google has not loaded.';
+// Create a basic error div template
+function createErrorDiv(text) {
   var errorDiv = document.createElement('div');
-  var list = document.getElementById('place-list');
-
   errorDiv.classList.add('alert');
   errorDiv.classList.add('alert-danger');
   errorDiv.style.margin = '20px';
   errorDiv.innerHTML = text;
-  list.appendChild(errorDiv);
+  return errorDiv;
+}
+
+// Show an error message if Google has not loaded
+function googleError() {
+  var text = 'Many apologies... it appears Google has not loaded.';
+  var list = document.getElementById('place-list');
+  list.appendChild(createErrorDiv(text));
+}
+
+// Show an error message if Yelp has not loaded
+function yelpError() {
+  var text = "Oh no! We're unable to reach Yelp...";
+  var mapDiv = document.getElementById('mapDiv');
+  var map = document.getElementById('map');
+  var yelpErr = createErrorDiv(text);
+  mapDiv.insertBefore(yelpErr, map);
 }
 
 /** NOTE: the following OAuth code is largely based on @MarkN's implementation,
 with customized usage of result data */
 
-// Generate randowm number & return as string for OAuth
+// Generate random number & return as string for OAuth
 function nonceGenerate() {
   return (Math.floor(Math.random() * 1e12).toString());
 }
 
-// Get Yelp data through an AJAX request (with appropriate key, token, & secrets)
+// Get Yelp data through a JSONP request (with appropriate key, token, & secrets)
 function getYelpData(marker, yelp_id, infowindow) {
   var YELP_BASE_URL = 'https://api.yelp.com/v2/';
   var CONSUMER_KEY = '4JVdSu5Pu8JrqsjFucDq2w';
   var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko';
-  // var CONSUMER_TOKEN = 'bvyZyuexy41XduOQLolQ15nH244_f9Ko###';
   var CONSUMER_SECRET = '27txGjT7RBW5WbPgpqJhl8GFH9U';
   var TOKEN_SECRET = '6LJy8jxTTbA1eXMvbJMZju3DfvI';
 
@@ -310,7 +322,9 @@ function getYelpData(marker, yelp_id, infowindow) {
     url: yelp_url,
     data: parameters,
     cache: true,
+    callback: yelp_url,
     dataType: 'jsonp',
+    callback: 'cb',
     success: function(results) {
       var innerHTML = '<div class="yelp">';
       // check if each result exists before adding it to the div
@@ -339,15 +353,10 @@ function getYelpData(marker, yelp_id, infowindow) {
       infowindow.open(map, marker);
     },
     // TODO: need to fix this to return more specific error message
-    // error: function(error) {
-    //   console.log('Yelp error: ' + error.id);
-    //   // alert("Yelp API v2 returned the following error: " + error.id);
-    // }
+    error: function() {
+      yelpError();
+    }
   };
 
-  // $.ajax(settings);
-  $.ajax(settings).catch(function (err) {
-    // console.error(err);
-    alert("Yelp API v2 returned the following error: " + err);
-  });
+  $.jsonp(settings);
 }

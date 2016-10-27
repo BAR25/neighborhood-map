@@ -7,15 +7,7 @@ In this project a map-based web app was built from scratch, integrating Google M
 ###How to View This Page
 Go to: https://ksan8.github.io/neighborhood-map/
 
-Click on a marker or list item to find out more information about a local business. You may also filter by type of business or keyword.
-
-###Usage of the task-runner Grunt
-Grunt is a task-runner that for this project was used to
-minify CSS files (<a href="https://github.com/gruntjs/grunt-contrib-cssmin">cssmin</a>) and JavaScript files (<a href="https://github.com/gruntjs/grunt-contrib-uglify">uglify</a>).
-
-Getting Started with <a href="http://gruntjs.com/getting-started">Grunt</a>.
-
-More <a href="https://github.com/javsalazar/grunt-boilerplate">specific instructions</a> on using Grunt for a Udacity project.
+Click on a marker or list item to find out more information about a local business. You may also filter by type of business or keyword in the dropdown menu.
 
 ###Attributions
 * <a href="http://getbootstrap.com/">Bootstrap</a>
