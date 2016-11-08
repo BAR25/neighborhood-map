@@ -5,7 +5,7 @@ Capstone project for <a href="https://www.udacity.com/">Udacity</a>'s <a href="h
 In this project a map-based web app was built from scratch, integrating Google Maps APIs and the Yelp API v.2.
 
 ###How to View This Page
-Go to: https://ksan8.github.io/neighborhood-map/
+Clone or download this repository and open _index.html_ in your browser.
 
 Click on a marker or list item to find out more information about a local business. You may also filter by type of business or keyword in the dropdown menu.
 
