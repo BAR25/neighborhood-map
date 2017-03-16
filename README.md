@@ -1,10 +1,12 @@
 ## Neighborhood Map Project
 Capstone project for <a href="https://www.udacity.com/">Udacity</a>'s <a href="https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001?v=fe1">Front-End Web Developer Nanodegree</a> program
 
-###Williams Neighborhood Map
+### Williams Neighborhood Map
 In this project a map-based web app was built from scratch, integrating Google Maps APIs and the Yelp API v.2.
 
-###How to View This Page
+![Neighborhood Map site screenshot](./site-screenshot.png)
+
+### How to View This Page
 Clone or download this repository, then open _index.html_ in your browser after starting a simple web server.
 
 The easiest way is to use SimpleHTTPServer if you already have Python installed (it comes pre-installed on most Mac OS X and Linux computers). In a terminal window, cd into the downloaded directory and run the following command:
@@ -15,7 +17,7 @@ After it starts, you can navigate to http://0.0.0.0:8000/index.html in your pref
 
 Click on a marker or list item to find out more information about a local business. You may also filter by type of business or keyword in the dropdown menu.
 
-###Attributions
+### Attributions
 * <a href="http://getbootstrap.com/">Bootstrap</a>
 * <a href="http://knockoutjs.com/">Knockout</a>
 * <a href="https://github.com/twbs/bootlint">Bootlint</a>
