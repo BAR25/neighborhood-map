@@ -29,8 +29,8 @@ Click on a marker or list item to find out more information about a local busine
 * Google error handling based off of Udacity forum mentor Stacy's <a href="https://discussions.udacity.com/t/handling-google-maps-in-async-and-fallback/34282">code</a>
 * <a href="https://github.com/jaubourg/jquery-jsonp">jQuery-JSONP plugin</a> — <a href="https://github.com/jaubourg">Julian Aubourg</a>
 
-###Author
+### Author
 Kezia Wineberg
 
-###Contact
+### Contact
 ksan8@protonmail.com
